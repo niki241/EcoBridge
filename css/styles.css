@@ -356,6 +356,61 @@ p {
     margin-right: 0.5rem;
 }
 
+ .voice-checkin {
+     margin: 1.25rem 0 1rem;
+     padding: 1.25rem;
+     border-radius: 16px;
+     border: 1px solid rgba(56, 224, 122, 0.16);
+     background: linear-gradient(135deg, rgba(56, 224, 122, 0.10), rgba(12, 18, 14, 0.9));
+ }
+
+ .voice-checkin h3 {
+     margin-top: 0;
+ }
+
+ .voice-help {
+     margin-bottom: 0.75rem;
+ }
+
+ .voice-status {
+     margin: 0.75rem 0 0;
+     font-size: 0.95rem;
+     color: var(--text-secondary);
+ }
+
+ .voice-status[data-mode="listening"] {
+     color: rgba(56, 224, 122, 0.8);
+ }
+
+ .voice-bubbles {
+     display: grid;
+     grid-template-columns: 1fr;
+     gap: 0.75rem;
+     margin-top: 0.9rem;
+ }
+
+ .voice-bubble {
+     border-radius: 14px;
+     border: 1px solid rgba(56, 224, 122, 0.14);
+     background: rgba(5, 7, 5, 0.55);
+     padding: 0.85rem 0.9rem;
+ }
+
+ .voice-bubble--coach {
+     background: rgba(56, 224, 122, 0.08);
+ }
+
+ .voice-bubble__label {
+     font-size: 0.85rem;
+     color: var(--text-secondary);
+     margin-bottom: 0.35rem;
+ }
+
+ .voice-bubble__text {
+     color: var(--text-primary);
+     word-break: break-word;
+ }
+
 /* Leaf Animation */
 .leaf-animation {
     position: relative;
