@@ -7,11 +7,12 @@ class EcoAnimations {
     }
 
     initializeAnimations() {
+        document.body.classList.add('motion-enabled');
         this.setupScrollAnimations();
         this.setupHoverAnimations();
         this.setupPageLoadAnimations();
         this.setupButtonAnimations();
-        this.setupConfetti();
+        this.setupNatureMotion();
     }
 
     setupScrollAnimations() {
@@ -88,6 +89,10 @@ class EcoAnimations {
         const buttons = document.querySelectorAll('button');
         
         buttons.forEach(button => {
+            button.addEventListener('pointerdown', (e) => {
+                this.rippleEffect(e, button);
+            });
+
             button.addEventListener('click', (e) => {
                 // Add a small scale effect on click
                 button.style.transform = 'scale(0.98)';
@@ -99,6 +104,19 @@ class EcoAnimations {
                 this.rippleEffect(e, button);
             });
         });
+
+        // Delegated fallback: guarantees ripples even if buttons are added later
+        // or if individual listeners fail to attach for any reason.
+        if (!window.__ecoRippleDelegate) {
+            window.__ecoRippleDelegate = true;
+            document.addEventListener('pointerdown', (e) => {
+                const target = e.target;
+                if (!target || !target.closest) return;
+                const btn = target.closest('button, .habit-btn, .btn-primary, .btn-secondary');
+                if (!btn) return;
+                this.rippleEffect(e, btn);
+            }, { capture: true });
+        }
     }
 
     rippleEffect(event, element) {
@@ -109,9 +127,14 @@ class EcoAnimations {
         
         // Set ripple styles
         ripple.style.width = ripple.style.height = `${size}px`;
-        ripple.style.left = `${event.clientX - rect.left - size/2}px`;
-        ripple.style.top = `${event.clientY - rect.top - size/2}px`;
+
+        const clientX = (event && typeof event.clientX === 'number') ? event.clientX : (rect.left + rect.width / 2);
+        const clientY = (event && typeof event.clientY === 'number') ? event.clientY : (rect.top + rect.height / 2);
+
+        ripple.style.left = `${clientX - rect.left - size/2}px`;
+        ripple.style.top = `${clientY - rect.top - size/2}px`;
         ripple.classList.add('ripple');
+        ripple.style.zIndex = '5';
         
         // Remove any existing ripples
         const existingRipple = element.querySelector('.ripple');
@@ -127,102 +150,116 @@ class EcoAnimations {
         // Remove ripple after animation
         setTimeout(() => {
             ripple.remove();
-        }, 600);
+        }, 1300);
     }
 
-    setupConfetti() {
-        // This creates a simple confetti effect
-        window.showConfetti = () => {
-            const colors = ['#4CAF50', '#81C784', '#388E3C', '#A5D6A7', '#66BB6A'];
-            const canvas = document.createElement('canvas');
-            const container = document.querySelector('.app-container') || document.body;
-            
-            canvas.style.position = 'fixed';
-            canvas.style.top = '0';
-            canvas.style.left = '0';
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
-            canvas.style.pointerEvents = 'none';
-            canvas.style.zIndex = '1000';
-            
-            container.appendChild(canvas);
-            
-            const ctx = canvas.getContext('2d');
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            
-            // Set canvas size
-            canvas.width = width;
-            canvas.height = height;
-            
-            // Create confetti particles
-            const particles = [];
-            const particleCount = 100;
-            
-            for (let i = 0; i < particleCount; i++) {
-                particles.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height - height,
-                    r: Math.random() * 4 + 1,
-                    d: Math.random() * particleCount,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    rotation: Math.random() * 360,
-                    speed: Math.random() * 3 + 2
-                });
-            }
-            
-            // Animation loop
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-                
-                let stillActive = false;
-                
-                particles.forEach((p, i) => {
-                    p.y += p.speed;
-                    p.rotation += 2;
-                    
-                    if (p.y < height) {
-                        stillActive = true;
-                    }
-                    
-                    ctx.save();
-                    ctx.translate(p.x, p.y);
-                    ctx.rotate(p.rotation * Math.PI / 180);
-                    
-                    ctx.fillStyle = p.color;
-                    ctx.globalAlpha = 0.8;
-                    ctx.fillRect(-p.r, -p.r, p.r * 2, p.r * 2);
-                    
-                    ctx.restore();
-                });
-                
-                if (stillActive) {
-                    requestAnimationFrame(animate);
-                } else {
-                    canvas.remove();
-                }
-            }
-            
-            // Start animation
-            animate();
-            
-            // Remove canvas after animation completes
-            setTimeout(() => {
-                if (canvas.parentNode) {
-                    canvas.parentNode.removeChild(canvas);
-                }
-            }, 3000);
+    setupNatureMotion() {
+        // No confetti, no fireworks. Just calm satisfaction.
+        // Keep backwards compatibility: if something calls showConfetti, do nothing.
+        window.showConfetti = () => {};
+
+        // Leaves drifting (enhance the existing .leaf elements if present)
+        const leaves = document.querySelectorAll('.leaf-animation .leaf');
+        leaves.forEach((leaf, idx) => {
+            leaf.style.animationName = 'leafDrift';
+            leaf.style.animationDuration = `${10 + idx * 3}s`;
+            leaf.style.animationTimingFunction = 'ease-in-out';
+            leaf.style.animationIterationCount = 'infinite';
+            leaf.style.opacity = '0.6';
+        });
+
+        // Soft light pulses on cards
+        const applyPulse = () => {
+            document.querySelectorAll('.checkin-card, .progress-card').forEach(card => {
+                card.classList.add('soft-pulse');
+            });
         };
+        requestAnimationFrame(applyPulse);
+
+        // Progress ring bloom when progress screen becomes visible
+        const progressSection = document.getElementById('progressSection');
+        const ring = document.querySelector('.progress-ring');
+        const ringCircle = document.querySelector('.progress-ring-circle');
+
+        const bloom = () => {
+            if (ring) {
+                ring.classList.remove('ring-bloom');
+                // force reflow
+                void ring.offsetWidth;
+                ring.classList.add('ring-bloom');
+            }
+
+            if (ringCircle) {
+                ringCircle.style.transitionDuration = '2.8s';
+            }
+        };
+
+        if (progressSection) {
+            const observer = new MutationObserver(() => {
+                const hidden = progressSection.classList.contains('hidden');
+                if (!hidden) {
+                    bloom();
+                    applyPulse();
+                }
+            });
+            observer.observe(progressSection, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        // Re-apply pulses on navigation as sections toggle
+        const dailyCheckin = document.getElementById('dailyCheckin');
+        if (dailyCheckin) {
+            const observer = new MutationObserver(() => {
+                const hidden = dailyCheckin.classList.contains('hidden');
+                if (!hidden) applyPulse();
+            });
+            observer.observe(dailyCheckin, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        // Deterministic bloom: if progress is visible, ensure bloom class exists.
+        if (!window.__ecoBloomInterval) {
+            window.__ecoBloomInterval = setInterval(() => {
+                const section = document.getElementById('progressSection');
+                if (!section || section.classList.contains('hidden')) return;
+                const ringNow = document.querySelector('.progress-ring');
+                if (!ringNow) return;
+                if (!ringNow.classList.contains('ring-bloom')) {
+                    ringNow.classList.add('ring-bloom');
+                }
+            }, 800);
+        }
+
+        // Safety net: periodically re-apply pulses in case elements mount later.
+        if (!window.__ecoPulseInterval) {
+            window.__ecoPulseInterval = setInterval(applyPulse, 2500);
+        }
     }
 }
 
 // Initialize animations when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => {
+const initEcoAnimations = () => {
     const ecoAnimations = new EcoAnimations();
-    
+
     // Make available globally for debugging
     window.ecoAnimations = ecoAnimations;
-});
+
+    // Ensure the motion marker stays applied even if other code touches body classes.
+    const ensureMotionClass = () => {
+        if (document.body) document.body.classList.add('motion-enabled');
+    };
+    ensureMotionClass();
+    setTimeout(ensureMotionClass, 0);
+    setTimeout(ensureMotionClass, 250);
+    setTimeout(ensureMotionClass, 1000);
+    if (!window.__ecoMotionInterval) {
+        window.__ecoMotionInterval = setInterval(ensureMotionClass, 3000);
+    }
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEcoAnimations);
+} else {
+    initEcoAnimations();
+}
 
 // Add CSS for animations
 const style = document.createElement('style');
@@ -250,6 +287,59 @@ style.textContent = `
             opacity: 0;
         }
     }
+
+    @keyframes waterRipple {
+        0% {
+            transform: scale(0);
+            opacity: 0.55;
+        }
+        100% {
+            transform: scale(6.2);
+            opacity: 0;
+        }
+    }
+
+    @keyframes leafDrift {
+        0%, 100% {
+            transform: translate3d(0, 0, 0) rotate(-2deg);
+        }
+        50% {
+            transform: translate3d(0, 42px, 0) rotate(4deg);
+        }
+    }
+
+    @keyframes softPulse {
+        0%, 100% {
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+        }
+        50% {
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(56, 224, 122, 0.10), 0 0 26px rgba(56, 224, 122, 0.10);
+        }
+    }
+
+    @keyframes ringBloom {
+        0% {
+            transform: scale(0.94);
+            filter: blur(0px);
+            opacity: 0.65;
+        }
+        100% {
+            transform: scale(1);
+            filter: blur(0px);
+            opacity: 1;
+        }
+    }
+
+    @keyframes ambientGlow {
+        0%, 100% {
+            opacity: 0.18;
+            transform: translate3d(0, 0, 0) scale(1);
+        }
+        50% {
+            opacity: 0.32;
+            transform: translate3d(0, 0, 0) scale(1.03);
+        }
+    }
     
     /* Apply animations */
     .welcome-section {
@@ -267,26 +357,43 @@ style.textContent = `
     .ripple {
         position: absolute;
         border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.7);
+        background-color: rgba(56, 224, 122, 0.30);
+        box-shadow: 0 0 0 1px rgba(56, 224, 122, 0.22), 0 0 18px rgba(56, 224, 122, 0.18);
         transform: scale(0);
-        animation: ripple 0.6s linear;
+        animation: waterRipple 1.2s ease-out;
         pointer-events: none;
+        mix-blend-mode: screen;
     }
     
     .suggestion-update {
         animation: fadeIn 0.5s ease-out;
     }
-    
-    /* Confetti particles */
-    .confetti {
+
+    /* Ambient calm glow (helps you see motion even before clicking) */
+    body.motion-enabled::before {
+        content: '';
         position: fixed;
-        width: 10px;
-        height: 10px;
-        background-color: #f00;
-        opacity: 0.7;
-        border-radius: 50%;
+        inset: -20vh;
         pointer-events: none;
-        z-index: 1000;
+        z-index: 0;
+        background:
+            radial-gradient(700px 500px at 20% 20%, rgba(56, 224, 122, 0.12), transparent 60%),
+            radial-gradient(900px 650px at 80% 30%, rgba(56, 224, 122, 0.10), transparent 65%),
+            radial-gradient(850px 650px at 50% 95%, rgba(56, 224, 122, 0.08), transparent 60%);
+        animation: ambientGlow 10s ease-in-out infinite;
+    }
+
+    .app-container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .soft-pulse {
+        animation: softPulse 6s ease-in-out infinite;
+    }
+
+    .ring-bloom {
+        animation: ringBloom 2.2s ease-out both;
     }
 `;
 

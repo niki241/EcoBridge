@@ -101,6 +101,17 @@ class EcoHabitUI {
         this.toggleSection('progressSection', true);
         this.updateProgressUI();
         this.ensureReflectionPrompt();
+
+        const ring = document.querySelector('.progress-ring');
+        if (ring) {
+            ring.classList.remove('ring-bloom');
+            void ring.offsetWidth;
+            ring.classList.add('ring-bloom');
+        }
+
+        document.querySelectorAll('.checkin-card, .progress-card').forEach(card => {
+            card.classList.add('soft-pulse');
+        });
     }
 
     toggleSection(sectionKey, show) {
@@ -113,7 +124,6 @@ class EcoHabitUI {
     completeDailyCheckin() {
         // In a real app, this would save the check-in data
         this.showProgress();
-        this.showConfetti();
     }
 
     updateProgressUI() {
@@ -194,15 +204,7 @@ class EcoHabitUI {
     }
 
     showConfetti() {
-        // Simple confetti effect
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        document.body.appendChild(confetti);
-        
-        // Remove after animation
-        setTimeout(() => {
-            confetti.remove();
-        }, 3000);
+        return;
     }
 
     checkConsent() {
