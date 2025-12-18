@@ -108,6 +108,7 @@ class HabitTracker {
     }
 
     saveToStorage() {
+        if (!window?.ethicsManager?.dataCollectionEnabled) return;
         localStorage.setItem('habitData', JSON.stringify({
             habits: this.habits,
             daily: this.daily
@@ -115,6 +116,7 @@ class HabitTracker {
     }
 
     loadFromStorage() {
+        if (!window?.ethicsManager?.dataCollectionEnabled) return;
         const savedHabits = localStorage.getItem('habitData');
         
         if (savedHabits) {

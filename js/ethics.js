@@ -38,7 +38,7 @@ class EthicsManager {
                 this.handleConsent(false);
             } else if (e.target.matches('#learnMore, #learnMore *')) {
                 e.preventDefault();
-                this.showPrivacyPolicy();
+                this.showTransparencyScreen();
             }
         });
     }
@@ -60,6 +60,13 @@ class EthicsManager {
         // Initialize analytics if consent was given
         if (given) {
             this.initializeAnalytics();
+        } else {
+            try {
+                localStorage.removeItem('habitData');
+                localStorage.removeItem('ecoCoachProfile');
+                localStorage.removeItem('ecoHabitSettings');
+                localStorage.removeItem('ecoHabitReflection');
+            } catch {}
         }
         
         // Dispatch event for other components
@@ -211,6 +218,117 @@ class EthicsManager {
         document.body.appendChild(modal);
     }
 
+    getSettings() {
+        try {
+            if (!this.dataCollectionEnabled) {
+                return { suggestionsEnabled: false, badgesEnabled: false, leaderboardEnabled: false };
+            }
+            const raw = localStorage.getItem('ecoHabitSettings');
+            const parsed = raw ? JSON.parse(raw) : {};
+            return {
+                suggestionsEnabled: parsed.suggestionsEnabled !== false,
+                badgesEnabled: parsed.badgesEnabled !== false,
+                leaderboardEnabled: parsed.leaderboardEnabled !== false
+            };
+        } catch {
+            return { suggestionsEnabled: true, badgesEnabled: true, leaderboardEnabled: true };
+        }
+    }
+
+    setSettings(next) {
+        if (!this.dataCollectionEnabled) return;
+        try {
+            localStorage.setItem('ecoHabitSettings', JSON.stringify({
+                suggestionsEnabled: next?.suggestionsEnabled !== false,
+                badgesEnabled: next?.badgesEnabled !== false,
+                leaderboardEnabled: next?.leaderboardEnabled !== false
+            }));
+        } catch {}
+    }
+
+    showTransparencyScreen() {
+        if (document.getElementById('transparencyModal')) return;
+
+        const settings = this.getSettings();
+
+        const modal = document.createElement('div');
+        modal.id = 'transparencyModal';
+        modal.className = 'calm-modal';
+
+        const disabledAttr = this.dataCollectionEnabled ? '' : 'disabled';
+        const checkedSuggestions = settings.suggestionsEnabled ? 'checked' : '';
+        const checkedBadges = settings.badgesEnabled ? 'checked' : '';
+        const checkedLeaderboard = settings.leaderboardEnabled ? 'checked' : '';
+
+        modal.innerHTML = `
+            <div class="calm-modal__backdrop" data-close="true"></div>
+            <div class="calm-modal__panel" role="dialog" aria-modal="true" aria-label="Transparency">
+                <h3>Full transparency</h3>
+                <div class="transparency-lines">
+                    <div class="transparency-line"><strong>Data stays local</strong><span>Everything lives in your browser on this device.</span></div>
+                    <div class="transparency-line"><strong>Suggestions optional</strong><span>You can turn them off anytime.</span></div>
+                    <div class="transparency-line"><strong>Nothing is tracked without consent</strong><span>If you decline, we won’t store anything.</span></div>
+                    <div class="transparency-line"><strong>No public leaderboards</strong><span>Leaderboards are private to this device only.</span></div>
+                </div>
+
+                <div class="transparency-toggles">
+                    <label class="transparency-toggle">
+                        <input id="toggleSuggestions" type="checkbox" ${checkedSuggestions} ${disabledAttr} />
+                        <span>Suggestions</span>
+                    </label>
+                    <label class="transparency-toggle">
+                        <input id="toggleBadges" type="checkbox" ${checkedBadges} ${disabledAttr} />
+                        <span>Badges (private)</span>
+                    </label>
+                    <label class="transparency-toggle">
+                        <input id="toggleLeaderboard" type="checkbox" ${checkedLeaderboard} ${disabledAttr} />
+                        <span>Leaderboard (private)</span>
+                    </label>
+                </div>
+
+                <div class="transparency-actions">
+                    <button class="btn-secondary" type="button" data-close="true">Close</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const close = () => modal.remove();
+
+        modal.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target && target.dataset && target.dataset.close === 'true') {
+                close();
+            }
+        });
+
+        document.addEventListener('keydown', function onKeyDown(e) {
+            if (e.key === 'Escape') {
+                document.removeEventListener('keydown', onKeyDown);
+                close();
+            }
+        });
+
+        const suggestionsEl = modal.querySelector('#toggleSuggestions');
+        const badgesEl = modal.querySelector('#toggleBadges');
+        const leaderboardEl = modal.querySelector('#toggleLeaderboard');
+
+        const persist = () => {
+            const next = {
+                suggestionsEnabled: !!suggestionsEl?.checked,
+                badgesEnabled: !!badgesEl?.checked,
+                leaderboardEnabled: !!leaderboardEl?.checked
+            };
+            this.setSettings(next);
+            document.dispatchEvent(new CustomEvent('ecoSettingsUpdated', { detail: next }));
+        };
+
+        if (suggestionsEl) suggestionsEl.addEventListener('change', persist);
+        if (badgesEl) badgesEl.addEventListener('change', persist);
+        if (leaderboardEl) leaderboardEl.addEventListener('change', persist);
+    }
+
     // Data anonymization helper
     anonymizeData(data) {
         if (!this.dataCollectionEnabled) return null;
@@ -238,16 +356,5 @@ class EthicsManager {
     }
 }
 
-// Initialize the ethics manager
-document.addEventListener('DOMContentLoaded', () => {
-    const ethicsManager = new EthicsManager();
-    
-    // Make it available globally
-    window.ethicsManager = ethicsManager;
-    
-    // Example usage:
-    // ethicsManager.trackEvent('habit', 'completed', 'water_saved');
-});
-
-// Export for use in other modules
-export const ethicsManager = window.ethicsManager || new EthicsManager();
+export const ethicsManager = new EthicsManager();
+window.ethicsManager = ethicsManager;

@@ -228,39 +228,10 @@ class EcoHabitUI {
     }
 
     showPrivacyInfo() {
-        // In a real app, this would show a modal or navigate to a privacy page
-        if (document.getElementById('privacyModal')) return;
-
-        const modal = document.createElement('div');
-        modal.id = 'privacyModal';
-        modal.className = 'calm-modal';
-
-        modal.innerHTML = `
-            <div class="calm-modal__backdrop" data-close="true"></div>
-            <div class="calm-modal__panel" role="dialog" aria-modal="true" aria-label="Privacy information">
-                <h3>Privacy</h3>
-                <p>Privacy is important to us. We only collect data to improve your experience and never share it with third parties.</p>
-                <p>You can change your preferences anytime in settings.</p>
-                <button class="btn-secondary" type="button" data-close="true">Close</button>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        const close = () => modal.remove();
-        modal.addEventListener('click', (e) => {
-            const target = e.target;
-            if (target && target.dataset && target.dataset.close === 'true') {
-                close();
-            }
-        });
-
-        document.addEventListener('keydown', function onKeyDown(e) {
-            if (e.key === 'Escape') {
-                document.removeEventListener('keydown', onKeyDown);
-                close();
-            }
-        });
+        if (window.ethicsManager && typeof window.ethicsManager.showTransparencyScreen === 'function') {
+            window.ethicsManager.showTransparencyScreen();
+            return;
+        }
     }
 }
 

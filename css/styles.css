@@ -411,6 +411,134 @@ p {
      word-break: break-word;
  }
 
+ .badges-card {
+     margin-top: 1.25rem;
+     padding: 1.15rem;
+     border-radius: 16px;
+     border: 1px solid rgba(56, 224, 122, 0.14);
+     background: linear-gradient(135deg, rgba(56, 224, 122, 0.06), rgba(12, 18, 14, 0.9));
+ }
+
+ .badges-card h3 {
+     margin-top: 0;
+ }
+
+ .badges-help {
+     color: var(--text-secondary);
+     margin: 0.25rem 0 0.9rem;
+ }
+
+ .badges-list {
+     display: grid;
+     grid-template-columns: 1fr;
+     gap: 0.75rem;
+ }
+
+ .badge {
+     display: grid;
+     grid-template-columns: auto 1fr auto;
+     align-items: center;
+     gap: 0.65rem;
+     padding: 0.8rem 0.9rem;
+     border-radius: 14px;
+     border: 1px solid rgba(56, 224, 122, 0.14);
+     background: rgba(5, 7, 5, 0.55);
+ }
+
+ .badge--earned {
+     background: rgba(56, 224, 122, 0.10);
+ }
+
+ .badge--locked {
+     opacity: 0.7;
+ }
+
+ .badge__emoji {
+     font-size: 1.1rem;
+ }
+
+ .badge__state {
+     color: var(--text-secondary);
+     font-size: 0.9rem;
+ }
+
+ .leaderboard-list {
+     display: grid;
+     grid-template-columns: 1fr;
+     gap: 0.65rem;
+ }
+
+ .leaderboard-row {
+     display: grid;
+     grid-template-columns: auto 1fr auto;
+     align-items: center;
+     gap: 0.65rem;
+     padding: 0.8rem 0.9rem;
+     border-radius: 14px;
+     border: 1px solid rgba(56, 224, 122, 0.14);
+     background: rgba(5, 7, 5, 0.55);
+ }
+
+ .leaderboard-rank {
+     color: var(--text-primary);
+     font-weight: 600;
+     min-width: 3ch;
+ }
+
+ .leaderboard-day {
+     color: var(--text-primary);
+     font-variant-numeric: tabular-nums;
+ }
+
+ .leaderboard-score {
+     color: var(--text-secondary);
+     font-size: 0.9rem;
+     white-space: nowrap;
+ }
+
+ .badges-disabled {
+     color: var(--text-secondary);
+ }
+
+ .transparency-lines {
+     display: grid;
+     gap: 0.7rem;
+     margin: 0.75rem 0 1.05rem;
+ }
+
+ .transparency-line {
+     display: grid;
+     gap: 0.2rem;
+     padding: 0.75rem 0.85rem;
+     border-radius: 14px;
+     border: 1px solid rgba(56, 224, 122, 0.12);
+     background: rgba(5, 7, 5, 0.45);
+ }
+
+ .transparency-line span {
+     color: var(--text-secondary);
+ }
+
+ .transparency-toggles {
+     display: grid;
+     gap: 0.6rem;
+     margin: 0.5rem 0 0.5rem;
+ }
+
+ .transparency-toggle {
+     display: flex;
+     align-items: center;
+     gap: 0.6rem;
+     padding: 0.65rem 0.75rem;
+     border-radius: 14px;
+     border: 1px solid rgba(56, 224, 122, 0.12);
+     background: rgba(12, 18, 14, 0.65);
+ }
+
+ .transparency-toggle input {
+     accent-color: var(--primary-color);
+ }
+
 /* Leaf Animation */
 .leaf-animation {
     position: relative;

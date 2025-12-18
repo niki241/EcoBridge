@@ -14,6 +14,18 @@ class EcoCoach {
 
     loadUserProfile() {
         // Load or create user profile from localStorage
+        if (!window?.ethicsManager?.dataCollectionEnabled) {
+            return {
+                level: 0,
+                softMode: 0,
+                successStreak: 0,
+                skipStreak: 0,
+                overwhelmCooldownUntil: null,
+                lastCategory: null,
+                lastSuggestionId: null
+            };
+        }
+
         const savedProfile = localStorage.getItem('ecoCoachProfile');
         return savedProfile ? JSON.parse(savedProfile) : {
             level: 0,
@@ -38,7 +50,19 @@ class EcoCoach {
     }
 
     saveUserProfile() {
+        if (!window?.ethicsManager?.dataCollectionEnabled) return;
         localStorage.setItem('ecoCoachProfile', JSON.stringify(this.userProfile));
+    }
+
+    suggestionsEnabled() {
+        if (!window?.ethicsManager?.dataCollectionEnabled) return false;
+        try {
+            const raw = localStorage.getItem('ecoHabitSettings');
+            const parsed = raw ? JSON.parse(raw) : {};
+            return parsed.suggestionsEnabled !== false;
+        } catch {
+            return true;
+        }
     }
 
     buildSuggestionBank() {
@@ -191,6 +215,13 @@ class EcoCoach {
     }
 
     displayNextSuggestion() {
+        if (!this.suggestionsEnabled()) {
+            const suggestionElement = document.getElementById('aiSuggestion');
+            if (suggestionElement) {
+                suggestionElement.textContent = 'Suggestions are off. You can enable them in Transparency.';
+            }
+            return;
+        }
         const suggestion = this.getMicroSuggestion();
         if (!suggestion) return;
         this.currentSuggestion = suggestion;
