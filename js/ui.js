@@ -20,8 +20,25 @@ class EcoHabitUI {
 
     initialize() {
         this.setupEventListeners();
+        this.applyCalmWelcomeCopy();
         this.updateCurrentDate();
         this.checkConsent();
+    }
+
+    applyCalmWelcomeCopy() {
+        const welcome = this.elements.welcome;
+        if (!welcome) return;
+
+        const headline = welcome.querySelector('h1');
+        const tagline = welcome.querySelector('.tagline');
+
+        if (headline) {
+            headline.textContent = "You’re already doing enough. Let’s do one thing more.";
+        }
+
+        if (tagline) {
+            tagline.textContent = "EcoHabit Coach";
+        }
     }
 
     setupEventListeners() {
@@ -83,6 +100,7 @@ class EcoHabitUI {
         this.toggleSection('dailyCheckin', false);
         this.toggleSection('progressSection', true);
         this.updateProgressUI();
+        this.ensureReflectionPrompt();
     }
 
     toggleSection(sectionKey, show) {
@@ -110,7 +128,17 @@ class EcoHabitUI {
             const offset = circumference - (progress / 100) * circumference;
             
             progressElement.style.strokeDashoffset = offset;
-            progressPercentage.textContent = `${progress}%`;
+
+            // No percentages: just vibes.
+            const vibes = [
+                'gentle start',
+                'steady energy',
+                'soft glow',
+                'in a good flow',
+                'quiet momentum'
+            ];
+            const vibeIndex = Math.min(vibes.length - 1, Math.floor((progress / 100) * vibes.length));
+            progressPercentage.textContent = vibes[vibeIndex];
         }
         
         // Update streak count
@@ -118,6 +146,39 @@ class EcoHabitUI {
         if (streakCount) {
             // Example: 5 day streak
             streakCount.textContent = '5';
+        }
+    }
+
+    ensureReflectionPrompt() {
+        const progressCard = document.querySelector('#progressSection .progress-card');
+        if (!progressCard) return;
+
+        if (progressCard.querySelector('#reflectionPrompt')) return;
+
+        const reflection = document.createElement('div');
+        reflection.id = 'reflectionPrompt';
+        reflection.className = 'reflection-card';
+
+        reflection.innerHTML = `
+            <h3>Reflection</h3>
+            <p class="reflection-question">Which habit felt easiest today?</p>
+            <textarea id="reflectionInput" rows="3" placeholder="A sentence is enough."></textarea>
+            <button id="saveReflection" class="btn-secondary" type="button">Save</button>
+        `;
+
+        progressCard.appendChild(reflection);
+
+        const saveBtn = reflection.querySelector('#saveReflection');
+        const input = reflection.querySelector('#reflectionInput');
+
+        if (saveBtn && input) {
+            saveBtn.addEventListener('click', () => {
+                localStorage.setItem('ecoHabitReflection', input.value || '');
+                saveBtn.textContent = 'Saved';
+            });
+
+            const saved = localStorage.getItem('ecoHabitReflection');
+            if (saved) input.value = saved;
         }
     }
 
@@ -166,7 +227,38 @@ class EcoHabitUI {
 
     showPrivacyInfo() {
         // In a real app, this would show a modal or navigate to a privacy page
-        alert('Privacy is important to us. We only collect data to improve your experience and never share it with third parties. You can change your preferences anytime in settings.');
+        if (document.getElementById('privacyModal')) return;
+
+        const modal = document.createElement('div');
+        modal.id = 'privacyModal';
+        modal.className = 'calm-modal';
+
+        modal.innerHTML = `
+            <div class="calm-modal__backdrop" data-close="true"></div>
+            <div class="calm-modal__panel" role="dialog" aria-modal="true" aria-label="Privacy information">
+                <h3>Privacy</h3>
+                <p>Privacy is important to us. We only collect data to improve your experience and never share it with third parties.</p>
+                <p>You can change your preferences anytime in settings.</p>
+                <button class="btn-secondary" type="button" data-close="true">Close</button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const close = () => modal.remove();
+        modal.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target && target.dataset && target.dataset.close === 'true') {
+                close();
+            }
+        });
+
+        document.addEventListener('keydown', function onKeyDown(e) {
+            if (e.key === 'Escape') {
+                document.removeEventListener('keydown', onKeyDown);
+                close();
+            }
+        });
     }
 }
 
