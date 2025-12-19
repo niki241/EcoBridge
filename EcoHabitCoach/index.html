@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoHabit Coach 🌱</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Welcome Section -->
+        <header class="welcome-section" id="welcome">
+            <img class="eco-logo" src="assets/logo.png" alt="EcoHabit Coach logo" onerror="this.classList.add('missing')" />
+            <div class="leaf-animation">
+                <div class="leaf"></div>
+                <div class="leaf"></div>
+                <div class="leaf"></div>
+            </div>
+            <h1>Welcome to <span class="highlight">EcoHabit Coach</span></h1>
+            <p class="tagline">Small steps, big impact 🌍</p>
+            <button id="startBtn" class="btn-primary">Get Started</button>
+        </header>
+
+        <!-- Daily Check-in (initially hidden) -->
+        <section id="dailyCheckin" class="hidden">
+            <div class="checkin-card">
+                <h2>Daily Check-in</h2>
+                <p class="checkin-date" id="currentDate"></p>
+                
+                <div class="habit-category">
+                    <h3>💧 Water Usage</h3>
+                    <div class="habit-options">
+                        <button class="habit-btn" data-category="water" data-value="shower">
+                            <i class="fas fa-shower"></i>
+                            <span>Shower</span>
+                        </button>
+                        <button class="habit-btn" data-category="water" data-value="faucet">
+                            <i class="fas fa-faucet"></i>
+                            <span>Faucet</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="habit-category">
+                    <h3>🛍 Plastic Use</h3>
+                    <div class="habit-options">
+                        <button class="habit-btn" data-category="plastic" data-value="bottle">
+                            <i class="fas fa-wine-bottle"></i>
+                            <span>Bottle</span>
+                        </button>
+                        <button class="habit-btn" data-category="plastic" data-value="bag">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Bag</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="habit-category">
+                    <h3>🍽 Food Waste</h3>
+                    <div class="habit-options">
+                        <button class="habit-btn" data-category="food" data-value="leftovers">
+                            <i class="fas fa-utensils"></i>
+                            <span>Leftovers</span>
+                        </button>
+                        <button class="habit-btn" data-category="food" data-value="expired">
+                            <i class="fas fa-trash"></i>
+                            <span>Expired</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ai-suggestion">
+                    <h3>🌟 Today's Suggestion</h3>
+                    <p id="aiSuggestion">Loading your personalized suggestion...</p>
+                </div>
+
+                <button id="submitCheckin" class="btn-primary">Complete Check-in</button>
+            </div>
+        </section>
+
+        <!-- Progress Section (initially hidden) -->
+        <section id="progressSection" class="hidden">
+            <div class="progress-card">
+                <h2>Your Progress</h2>
+                <div class="progress-ring">
+                    <svg width="200" height="200" viewBox="0 0 200 200">
+                        <circle class="progress-ring-bg" cx="100" cy="100" r="90" fill="none" stroke="#e0e0e0" stroke-width="10"/>
+                        <circle class="progress-ring-circle" cx="100" cy="100" r="90" fill="none" stroke="#4CAF50" stroke-width="10" stroke-linecap="round" transform="rotate(-90 100 100)" stroke-dasharray="565.4866776461628" stroke-dashoffset="0"/>
+                    </svg>
+                    <div class="progress-text">
+                        <span id="progressPercentage">0%</span>
+                        <span>of weekly goal</span>
+                    </div>
+                </div>
+                <div class="streak-counter">
+                    <i class="fas fa-fire"></i>
+                    <span id="streakCount">0</span> day streak
+                </div>
+                <button id="backToCheckin" class="btn-secondary">Back to Check-in</button>
+            </div>
+        </section>
+
+        <!-- Consent Banner -->
+        <div id="consentBanner" class="consent-banner">
+            <p>We value your privacy. This app uses cookies to improve your experience.</p>
+            <div class="consent-buttons">
+                <button id="acceptConsent" class="btn-primary">Accept</button>
+                <button id="declineConsent" class="btn-secondary">Decline</button>
+                <a href="#" id="learnMore">Learn More</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/ethics.js" type="module"></script>
+    <script src="js/habits.js" type="module"></script>
+    <script src="js/coach.js" type="module"></script>
+    <script src="js/ui.js" type="module"></script>
+    <script src="js/animations.js" type="module"></script>
+</body>
+</html>

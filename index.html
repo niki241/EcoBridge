@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoBridge - Habit Tracker</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <!-- Ethics & Consent Overlay -->
+    <div id="consent-overlay" class="overlay">
+        <div class="consent-content">
+            <h2>Welcome to EcoBridge</h2>
+            <p>We value your privacy and data security. Please review our data usage policy:</p>
+            <ul>
+                <li>We collect minimal data to improve your experience</li>
+                <li>Your data is encrypted and stored securely</li>
+                <li>You can request data deletion anytime</li>
+            </ul>
+            <div class="consent-buttons">
+                <button id="accept-consent" class="btn btn-primary">I Accept</button>
+                <button id="decline-consent" class="btn btn-secondary">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app">
+        <header>
+            <h1>EcoBridge</h1>
+            <div class="progress-container">
+                <!-- Progress rings will be rendered here -->
+                <div id="progress-rings"></div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Daily Check-in Section -->
+            <section id="daily-checkin" class="hidden">
+                <h2>Daily Check-in</h2>
+                <form id="checkin-form">
+                    <div class="form-group">
+                        <label>How are you feeling today?</label>
+                        <div class="mood-selector">
+                            <button type="button" data-mood="1">😢</button>
+                            <button type="button" data-mood="2">😕</button>
+                            <button type="button" data-mood="3">😐</button>
+                            <button type="button" data-mood="4">🙂</button>
+                            <button type="button" data-mood="5">😊</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>What's your main goal for today?</label>
+                        <input type="text" id="daily-goal" placeholder="E.g., Drink more water, Take a walk...">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </section>
+
+            <!-- AI Suggestion Card -->
+            <div id="ai-suggestion" class="card hidden">
+                <h3>AI Suggestion</h3>
+                <div id="suggestion-content">
+                    <p>Loading your personalized suggestion...</p>
+                </div>
+                <div class="suggestion-actions">
+                    <button id="refresh-suggestion" class="btn btn-secondary">New Suggestion</button>
+                    <button id="dismiss-suggestion" class="btn btn-text">Dismiss</button>
+                </div>
+            </div>
+
+            <!-- Reflection Screen -->
+            <section id="reflection" class="hidden">
+                <h2>Daily Reflection</h2>
+                <form id="reflection-form">
+                    <div class="form-group">
+                        <label>What went well today?</label>
+                        <textarea id="positive-reflection" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>What could be improved?</label>
+                        <textarea id="improvement-reflection" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Reflection</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="src/js/app.js" type="module"></script>
+</body>
+</html>
